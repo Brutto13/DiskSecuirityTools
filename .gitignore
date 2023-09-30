@@ -1,4 +1,5 @@
 **/build
+**/test
 **/*.exe
 **/*.key
 **/*.pyc
