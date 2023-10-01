@@ -13,10 +13,10 @@ def transformMessage(mode: str, message: str, key: int, SymbolKey: str=SYMBOLS):
     poPrzekształceniu = ''
 
     for symbol in message:
-        indeksSymbolu = SymbolKey.find(symbol)
+        indeksSymbolu = SymbolKey.find(str(symbol))
         if indeksSymbolu == -1: # Symbol nie znajduje się w SYMBOLE.
             # Dodaj ten symbol bez żadnych zmian.
-            poPrzekształceniu += symbol
+            poPrzekształceniu += str(symbol)
         else:
             # Szyfrowanie lub deszyfrowanie
             indeksSymbolu += key
@@ -30,4 +30,5 @@ def transformMessage(mode: str, message: str, key: int, SymbolKey: str=SYMBOLS):
     return poPrzekształceniu
 
 # def GenerateKeyFile(filename: str, password: str):
-    
+
+# print(transformMessage("d", '2%*]}]{', 25))

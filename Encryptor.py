@@ -1,5 +1,7 @@
+import json
 import os
 import sys
+import datetime
 
 from tkinter import *
 from tkinter.filedialog import *
@@ -7,6 +9,14 @@ from tkinter.messagebox import *
 from tkinter.simpledialog import *
 from secuirityEncodings import *
 from cryptography.fernet import Fernet
+
+encryptionSettingsSCHEMA = {
+    'operation':str,
+    'files':{
+        'keyFile':str,
+        'filenames':list[str],
+    }
+}
 
 # setting up window
 window = Tk()
@@ -21,16 +31,16 @@ frm_excluded_management = Frame()
 # setting up labels
 lab_folderPath = Label(text='Folder path')
 lab_keyFile = Label(text='Key file')
-lab_exclude = Label(text='Excluded files')
+lab_exclude = Label(frm_excluded_management, text='Excluded files')
 
 # setting up entrys
-WIDTH = 50
+WIDTH = 76
 ent_folderpath = Entry(width=WIDTH)
 ent_keyFile = Entry(width=WIDTH)
 
 # setting up Text's widgets
 HEIGHT = 10
-WIDTH = 38
+WIDTH = 58
 txt_Excluded_files = Text(width=WIDTH, height=HEIGHT)
 
 def browseFolder():
@@ -51,9 +61,9 @@ def BTNAddExcludedFile():
     txt_Excluded_files.insert(END, filepath + '\n')
 
 def encrypt():
-    try:
+    # try:
         # TODO read the key file
-        with open(ent_keyFile.get(), "rb") as file:
+        with open(ent_keyFile.get(), "r") as file:
             content = file.readlines()
             key = content[0].encode()
             password = transformMessage("d", content[1], 25)
@@ -61,9 +71,16 @@ def encrypt():
         fernet = Fernet(key)
         fileslist = []
         # Ask for password
-        if askstring("Encryptor - Verification", "Enter password") == password and askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose it\nARE YOU SURE YOU WISH TO PROCEED?  "):
+        confirm = askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose it\nARE YOU SURE YOU WISH TO PROCEED?  ")
+        passwordEntered = askstring("Encryptor - Verification", "Enter password")
+        if passwordEntered  == password and confirm:
             # create list of excluded files XXX
-            ExcludedFiles = txt_Excluded_files.get(0, END).split(sep='\n')
+
+            if not txt_Excluded_files.get('0.0', END)  == '':
+                ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
+            else:
+                ExcludedFiles = []
+            
             for filename in os.listdir(ent_folderpath.get()):
                 if filename not in ExcludedFiles:
                     with open(filename, "rb") as file:
@@ -75,28 +92,44 @@ def encrypt():
                     
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
-            
+            if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
+                with open(f'encryption-{datetime.datetime.now()}.json', "x") as file:
+                    data = {
+                        'operation':'ENCRYPTION',
+                        'date':datetime.datetime.now(),
+                        'files':{
+                            'keyFile':ent_keyFile.get(),
+                            'filenames':fileslist,
+                        }
+                    }
+                    file.write(json.dumps(data))
+
         
         else:
             showerror("Encryptor", "Operation canceled")
-    except FileNotFoundError:
-        showerror("Encryptor - Error", "No such file or directory (ERR2)")
-    except Exception as e:
-        showerror("Encryptor - fatal error", f"Fatal exception occured:\n{e}")
+    # except FileNotFoundError:
+    #     showerror("Encryptor - Error", "No such file or directory (ERR2)")
+    # except Exception as e:
+    #     showerror("Encryptor - fatal error", f"Fatal exception occured:\n{e}")
 
 btn_encrypt = Button(text='Encrypt files', command=encrypt)
 btn_browseKey = Button(text='Browse...', command=browseKeyFile)
 btn_browseFolder = Button(text='Browse...', command=browseFolder)
-btn_addExcludedFile = Button(text='Add file', command=BTNAddExcludedFile)
+btn_addExcludedFile = Button(frm_excluded_management, text='Add file', command=BTNAddExcludedFile)
 
 # Grid
 lab_folderPath.grid(row=0, column=0, padx=5, pady=5)
 lab_keyFile.grid(row=1, column=0, padx=5, pady=5)
-lab_exclude.grid(row=2, column=0, padx=5, pady=5)
+
 
 ent_folderpath.grid(row=0, column=1, padx=5, pady=5)
 ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
 txt_Excluded_files.grid(row=2, column=1, padx=5, pady=5)
+
+frm_excluded_management.grid(row=2, column=0, padx=5, pady=5, sticky='n')
+lab_exclude.grid(row=0, column=0, padx=5, pady=5)
+btn_addExcludedFile.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
+
 
 btn_browseFolder.grid(row=0, column=2, padx=5, pady=5)
 btn_browseKey.grid(row=1, column=2, padx=5, pady=5)
