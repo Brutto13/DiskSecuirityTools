@@ -1,4 +1,4 @@
-SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUWZXYZ1234567890-=+!@#$%^&*()_[]{};\:"|,./<>?'
+SYMBOLS = 'ABCDEFGHIJKLMNOPQRSTUWZXYZabcdefghijklmnopqrstuwzźż1234567890-=+!@#$%^&*()_[]{};\:"|,./<>?~'
 
 def transformMessage(mode: str, message: str, key: int, SymbolKey: str=SYMBOLS):
     '''
