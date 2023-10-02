@@ -80,12 +80,15 @@ def encrypt():
                 ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
             else:
                 ExcludedFiles = []
-            
-            for filename in os.listdir(ent_folderpath.get()):
-                if filename not in ExcludedFiles:
-                    with open(filename, "rb") as file:
+            # print(os.listdir(ent_folderpath.get()))
+            dirToEncrypt = ent_folderpath.get()
+            print(dirToEncrypt)
+            for filename in os.listdir(dirToEncrypt):
+                print(filename)
+                if (dirToEncrypt + '/' +filename) not in ExcludedFiles:
+                    with open(dirToEncrypt + '/' + filename, "rb") as file:
                         original = file.read()
-                    with open(filename, "wb") as file:
+                    with open(dirToEncrypt + '/' + filename, "wb") as file:
                         encrypted = fernet.encrypt(original)
                         file.write(encrypted)
                     fileslist.append(filename)
@@ -93,7 +96,7 @@ def encrypt():
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
             if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
-                with open(f'encryption-{datetime.datetime.now()}.json', "x") as file:
+                with open(f'encryption-{datetime.datetime.date()}.json', "x") as file:
                     data = {
                         'operation':'ENCRYPTION',
                         'date':datetime.datetime.now(),
