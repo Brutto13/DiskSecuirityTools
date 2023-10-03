@@ -96,7 +96,7 @@ def encrypt():
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
             if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
-                with open(f'encryption-{datetime.datetime.date()}.json', "x") as file:
+                with open(f'encryption-{datetime.datetime.date("%d-%m")}.json', "x") as file:
                     data = {
                         'operation':'ENCRYPTION',
                         'date':datetime.datetime.now(),
