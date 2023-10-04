@@ -94,10 +94,9 @@ def encrypt():
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
             if askyesno("Encryptor", "Do you want to save JSON-formatted log?\n(it can be viewed by logViewer Tool)"):
-                with open(f'decryption-{datetime.datetime.date("%d-%d-%d")}.json', "x") as file:
+                with open(f'decryption-lastest-log.json', "x") as file:
                     data = {
                         'operation':'DECRYPTION',
-                        'date':datetime.datetime.now(),
                         'files':{
                             'keyFile':ent_keyFile.get(),
                             'filenames':fileslist,

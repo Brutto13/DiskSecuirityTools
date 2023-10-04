@@ -4,5 +4,9 @@
 **/*.key
 **/*.pyc
 **/*.log
+**/*.json
 **/keys
 **/encryptme
+**/build.py
+buildEncryptor.py
+buildDecryptor.py
