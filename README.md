@@ -1,4 +1,4 @@
-# DiskSecuirityTools
+# Disc Secuirity Tools
 ## Encryptor
 ### Manual
 #### Folder Path:
