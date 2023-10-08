@@ -1,24 +1,20 @@
 import json
-import time
-from tkinter.ttk import Progressbar
-import SimpleProgressBarLib as progressBar
 
-from SimpleProgressBarLib import ColorValue
-from colorama import Fore, init
-init(True)
-print("Welcome to this simple log viewer tool")
+from tkinter import *
+from tkinter.messagebox import *
+from tkinter.simpledialog import *
 
-filepath = input("enter filepath to your JSON file")
+window = Tk()
+window.title("LogViever for DiscSecuirityTools")
+window.resizable(False, False)
+window.rowconfigure(0, minsize=0, weight=1)
+window.columnconfigure(0, minsize=0, weight=1)
 
-progress = progressBar.DeterminatedProgressBar(
-    name="Reading JSON file",
-    total=100,
-    fill_char='_',
-    start_char='<',
-    ending_char='>',
-    main_char='+'
-)
+schema = {
+    'operation':str,
+    'files':{
+        'keyFile':str,
+        'filenames':list[str],
+    }
+}
 
-for _ in range(100):
-    progress.plot()
-    time.sleep(0.01)
