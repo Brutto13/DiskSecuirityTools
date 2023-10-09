@@ -61,52 +61,56 @@ def BTNAddExcludedFile():
     txt_Excluded_files.insert(END, filepath + '\n')
 
 def encrypt():
-    # try:
-        # TODO read the key file
-        with open(ent_keyFile.get(), "r") as file:
-            content = json.loads(file.read())
-            key = content['key'].encode()
-        
-        fernet = Fernet(key)
-        fileslist = []
-        # Ask for password
-        confirm = askokcancel("Decryptor - confirmation", "Warning: You are decrypting files, if you chosen wrong key, you will loose them without way back!\nAre you sure you want to continue?")
-        if confirm:
-            # create list of excluded files XXX
+    os.chdir(ent_folderpath.get())
+    # TODO read the key file
+    with open(ent_keyFile.get(), "r") as file:
+        content = json.loads(file.read())
+        key = content['key'].encode()
+    
+    fernet = Fernet(key)
+    fileslist = []
+    # Ask for password
+    confirm = askokcancel("Decryptor - confirmation", "Warning: You are decrypting files, if you chosen wrong key, you will loose them without way back!\nAre you sure you want to continue?")
+    if confirm:
+        # create list of excluded files XXX
 
-            if not txt_Excluded_files.get('0.0', END)  == '':
-                ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
-            else:
-                ExcludedFiles = []
-            # print(os.listdir(ent_folderpath.get()))
-            dirToEncrypt = ent_folderpath.get()
-            print(dirToEncrypt)
-            for filename in os.listdir(dirToEncrypt):
-                print(filename)
-                if (dirToEncrypt + '/' +filename) not in ExcludedFiles:
-                    with open(dirToEncrypt + '/' + filename, "rb") as file:
-                        original = file.read()
-                    with open(dirToEncrypt + '/' + filename, "wb") as file:
-                        decrypted = fernet.decrypt(original)
-                        file.write(decrypted)
-                    fileslist.append(filename)
-                    
-            
-            showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
-            if askyesno("Encryptor", "Do you want to save JSON-formatted log?\n(it can be viewed by logViewer Tool)"):
-                with open(f'decryption-lastest-log.json', "x") as file:
-                    data = {
-                        'operation':'DECRYPTION',
-                        'files':{
-                            'keyFile':ent_keyFile.get(),
-                            'filenames':fileslist,
-                        }
-                    }
-                    file.write(json.dumps(data))
-
-        
+        if not txt_Excluded_files.get('0.0', END)  == '':
+            ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
         else:
-            showerror("Decryptor - CANCELED", "Decrypting stpped by the user!")
+            ExcludedFiles = []
+        # print(os.listdir(ent_folderpath.get()))
+        dirToEncrypt = ent_folderpath.get()
+        print(dirToEncrypt)
+        for root, dirs, files in os.walk('.'):
+            for filename in files:
+                filepath = os.path.join(root, filename)
+                print(filename)
+                # if filepath not in ExcludedFiles:
+                with open(filepath, "rb") as file:
+                    original = file.read()
+                
+                with open(filepath, "wb") as file:
+                    decrypted = fernet.decrypt(original)
+                    file.write(decrypted)
+                
+                fileslist.append(filename)
+                
+        
+        showinfo("Decryptor - Done", "Succesfully Decrypted Files:\n%s" % ('\n'.join(fileslist)))
+        if askyesno("Encryptor", "Do you want to save JSON-formatted log?\n(it can be viewed by logViewer Tool)"):
+            with open(f'decryption-lastest-log.json', "x") as file:
+                data = {
+                    'operation':'DECRYPTION',
+                    'files':{
+                        'keyFile':ent_keyFile.get(),
+                        'filenames':fileslist,
+                    }
+                }
+                file.write(json.dumps(data))
+
+    
+    else:
+        showerror("Decryptor - CANCELED", "Decrypting stpped by the user!")
     # except FileNotFoundError:
     #     showerror("Encryptor - Error", "No such file or directory (ERR2)")
     # except Exception as e:
@@ -124,11 +128,11 @@ lab_keyFile.grid(row=1, column=0, padx=5, pady=5)
 
 ent_folderpath.grid(row=0, column=1, padx=5, pady=5)
 ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
-txt_Excluded_files.grid(row=2, column=1, padx=5, pady=5)
+# txt_Excluded_files.grid(row=2, column=1, padx=5, pady=5)
 
-frm_excluded_management.grid(row=2, column=0, padx=5, pady=5, sticky='n')
-lab_exclude.grid(row=0, column=0, padx=5, pady=5)
-btn_addExcludedFile.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
+# frm_excluded_management.grid(row=2, column=0, padx=5, pady=5, sticky='n')
+# lab_exclude.grid(row=0, column=0, padx=5, pady=5)
+# btn_addExcludedFile.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
 
 
 btn_browseFolder.grid(row=0, column=2, padx=5, pady=5)

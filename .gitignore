@@ -7,6 +7,7 @@
 **/*.json
 **/keys
 **/encryptme
+**/encryptme-backup
 **/build.py
 buildEncryptor.py
 buildDecryptor.py

@@ -2,8 +2,11 @@ import json
 import os
 import sys
 import datetime
+import time
+import path
 
 from tkinter import *
+from tkinter.ttk import Progressbar
 from tkinter.filedialog import *
 from tkinter.messagebox import *
 from tkinter.simpledialog import *
@@ -61,54 +64,63 @@ def BTNAddExcludedFile():
     txt_Excluded_files.insert(END, filepath + '\n')
 
 def encrypt():
-    # try:
-        # TODO read the key file
-        with open(ent_keyFile.get(), "r") as file:
-            content = file.readlines()
-            key = content[0].encode()
-            password = transformMessage("d", content[1], 25)
-        
-        fernet = Fernet(key)
-        fileslist = []
-        # Ask for password
-        confirm = askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose it\nARE YOU SURE YOU WISH TO PROCEED?  ")
-        passwordEntered = askstring("Encryptor - Verification", "Enter password")
-        if passwordEntered  == password and confirm:
-            # create list of excluded files XXX
+    os.chdir(ent_folderpath.get())
+# try:
+    # TODO read the key file
+    with open(ent_keyFile.get(), "r") as file:
+        content = file.readlines()
+        key = content[0].encode()
+        password = transformMessage("d", content[1], 25)
+    
+    fernet = Fernet(key)
+    fileslist = []
+    # Ask for password
+    confirm = askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose it\nARE YOU SURE YOU WISH TO PROCEED?  ")
+    passwordEntered = askstring("Encryptor - Verification", "Enter password")
+    if passwordEntered  == password and confirm:
+        # create list of excluded files XXX
 
-            if not txt_Excluded_files.get('0.0', END)  == '':
-                ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
-            else:
-                ExcludedFiles = []
-            # print(os.listdir(ent_folderpath.get()))
-            dirToEncrypt = ent_folderpath.get()
-            print(dirToEncrypt)
-            for filename in os.listdir(dirToEncrypt):
+        if not txt_Excluded_files.get('0.0', END)  == '':
+            ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
+        else:
+            ExcludedFiles = []
+        # print(os.listdir(ent_folderpath.get()))
+        dirToEncrypt = ent_folderpath.get()
+        print(dirToEncrypt)
+        progress = Progressbar(window, orient = HORIZONTAL, length = 100, mode = 'determinate')
+        for root, dirs, files in os.walk('.'):
+            for filename in files:
+                filepath = os.path.join(root, filename)
                 print(filename)
-                if (dirToEncrypt + '/' +filename) not in ExcludedFiles:
-                    with open(dirToEncrypt + '/' + filename, "rb") as file:
+                if filepath not in ExcludedFiles:
+                    with open(filepath, "rb") as file:
                         original = file.read()
-                    with open(dirToEncrypt + '/' + filename, "wb") as file:
+                    
+                    with open(filepath, "wb") as file:
                         encrypted = fernet.encrypt(original)
                         file.write(encrypted)
-                    fileslist.append(filename)
                     
-            
-            showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
-            if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
-                with open(f'encryption-lastest-log.json', "x") as file:
-                    data = {
-                        'operation':'ENCRYPTION',
-                        'files':{
-                            'keyFile':ent_keyFile.get(),
-                            'filenames':fileslist,
-                        }
-                    }
-                    file.write(json.dumps(data))
-
+                    fileslist.append(filename)
+                    time.sleep(0.01)
+                    progress.step(1.0)
+        # else:
+        #     showerror("Encryptor", f"Wrong Password \"{passwordEntered}\"")
         
-        else:
-            showerror("Encryptor", "Operation canceled")
+        showinfo("Encryptor - Done", "Succesfully Encrypted Files:%s" % ('\n'.join(fileslist)))
+        if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
+            with open(f'encryption-lastest-log.json', "x") as file:
+                data = {
+                    'operation':'ENCRYPTION',
+                    'files':{
+                        'keyFile':ent_keyFile.get(),
+                        'filenames':fileslist,
+                    }
+                }
+                file.write(json.dumps(data))
+
+    
+    else:
+        showerror("Encryptor", "Operation canceled")
     # except FileNotFoundError:
     #     showerror("Encryptor - Error", "No such file or directory (ERR2)")
     # except Exception as e:
@@ -126,11 +138,11 @@ lab_keyFile.grid(row=1, column=0, padx=5, pady=5)
 
 ent_folderpath.grid(row=0, column=1, padx=5, pady=5)
 ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
-txt_Excluded_files.grid(row=2, column=1, padx=5, pady=5)
+# txt_Excluded_files.grid(row=2, column=1, padx=5, pady=5)
 
-frm_excluded_management.grid(row=2, column=0, padx=5, pady=5, sticky='n')
-lab_exclude.grid(row=0, column=0, padx=5, pady=5)
-btn_addExcludedFile.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
+# frm_excluded_management.grid(row=2, column=0, padx=5, pady=5, sticky='n')
+# lab_exclude.grid(row=0, column=0, padx=5, pady=5)
+# btn_addExcludedFile.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
 
 
 btn_browseFolder.grid(row=0, column=2, padx=5, pady=5)
