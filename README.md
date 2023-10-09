@@ -33,4 +33,19 @@ don't want to decrypt (Add button will help you again)
 1) Do not encrypt/loose your private key
 2) There are 2 keys Private key ([...].prv) and JSON-formatted public key ([...].json)
 
+## CLI-version
+Both programs are avaible in CLI-version.
+Arguments are:
+### --folder
+A path to your folder that you want to encrypt
 
+### --key
+A path to your key file (*.prv for private and *.json for public one)
+
+### --backup-files (optional)
+Boolean argument. If provided the program will create
+backup of original files.
+WARNING: Files will have name <filename>.<fileExtension>-origin
+for example:
+file.txt -> file.txt-origin
+file.zip -> file.zip-origin
