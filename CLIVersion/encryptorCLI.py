@@ -27,7 +27,7 @@ parser.add_argument('--folder', dest='folder', required=True)
 parser.add_argument('--key', dest='keyfile', required=True)
 # optional
 parser.add_argument('--skip-errors', action='store_true', default=False, required=False, dest='skipErrors')
-parser.add_argument('--backup-folder', action='store_true', default=False, required=False, dest='makeBackup')
+parser.add_argument('--backup-files', action='store_true', default=False, required=False, dest='makeBackup')
 # parser.add_argument('--encrypt-subfolders', action='store_true', default=False, required=False, dest='encryptSubFolders')
 # info datas
 parser.add_argument('--version', action='store_true', default=False, required=False, dest='showVersionInfo')
