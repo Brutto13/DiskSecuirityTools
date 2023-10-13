@@ -16,7 +16,7 @@ with open(filepath, "r") as file:
     data = json.loads(file.read())
 
 print(f"{Fore.CYAN}Operation: {Fore.YELLOW}{data['operation']}")
-print(f"{Fore.CYAN}Filepaths:{Fore.YELLOW}{''.join(data['files']['filenames'])}")
-print(f"{Fore.CYAN}Used key: {Fore.YELLOW}{data['files']['keyfile']}")
+print("%sFilepaths:%s%s" % (Fore.CYAN, Fore.YELLOW, ('\n' + '\n'.join(data['files']['filenames']))))
+print(f"{Fore.CYAN}Used key: {Fore.YELLOW}{data['files']['keyFile']}")
 
 input("That\'s all. <PRESS_ENTER_TO_CLOSE>")
