@@ -85,7 +85,6 @@ def encrypt():
                     file.write(decrypted)
                 
                 fileslist.append(filename)
-                progress.step()
                 
         
         showinfo("Decryptor - Done", "Succesfully Decrypted Files:\n%s" % ('\n'.join(fileslist)))
@@ -127,5 +126,5 @@ ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
 # btn_browseFolder.grid(row=0, column=2, padx=5, pady=5)
 btn_browseKey.grid(row=1, column=2, padx=5, pady=5)
 btn_encrypt.grid(row=3, column=1, padx=5, pady=5, sticky='ew')
-progress.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
+# progress.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
 window.mainloop()

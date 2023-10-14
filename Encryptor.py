@@ -92,7 +92,7 @@ def encrypt():
                         file.write(encrypted)
                     
                     fileslist.append(dirToEncrypt + filename)
-                    window.mainloop()
+                    # window.mainloop()
                     # progress.step()
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:\n%s" % ('\n'.join(fileslist)))
