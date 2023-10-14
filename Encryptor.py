@@ -1,9 +1,6 @@
 import json
 import os
-import sys
-import datetime
 import time
-import path
 
 # tkinter imports
 # from tkinter import *
