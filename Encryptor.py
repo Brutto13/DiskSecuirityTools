@@ -6,8 +6,9 @@ import time
 import path
 
 # tkinter imports
-from tkinter import *
-from tkinter.ttk import Progressbar
+# from tkinter import *
+from tkinter import Tk, StringVar, END
+import tkinter.ttk as ttk
 from tkinter.filedialog import *
 from tkinter.messagebox import *
 from tkinter.simpledialog import *
@@ -31,27 +32,20 @@ window.resizable(False, False)
 window.rowconfigure(0, minsize=0, weight=1)
 window.columnconfigure(0, minsize=0, weight=1)
 
-# setting up frames
-frm_excluded_management = Frame()
-
 # setting up labels
-lab_folderPath = Label(text='Encrypted Disc')
-lab_keyFile = Label(text='Key file')
-lab_exclude = Label(frm_excluded_management, text='Excluded files')
+lab_folderPath = ttk.Label(text='Encrypted Disc')
+lab_keyFile = ttk.Label(text='Key file')
+
 
 # setting up entrys
 WIDTH = 76
-ent_folderpath = Entry(width=WIDTH)
-ent_keyFile = Entry(width=WIDTH)
+ent_folderpath = ttk.Entry(width=WIDTH)
+ent_keyFile = ttk.Entry(width=WIDTH)
 
-# setting up Text's widgets
-HEIGHT = 10
-WIDTH = 58
-txt_Excluded_files = Text(width=WIDTH, height=HEIGHT)
 
-disc_list = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+disc_list = [" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 var_disc = StringVar(window)
-opt_disc = OptionMenu(window, var_disc, *disc_list)
+opt_disc = ttk.OptionMenu(window, var_disc, *disc_list)
 
 def browseKeyFile():
     filepath = askopenfilename(
@@ -63,7 +57,7 @@ def browseKeyFile():
 
 def BTNAddExcludedFile():
     filepath = askopenfilename()
-    txt_Excluded_files.insert(END, filepath + '\n')
+    # txt_Excluded_files.insert(END, filepath + '\n')
 
 def encrypt():
     try:
@@ -84,26 +78,22 @@ def encrypt():
         confirm = askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose it\nARE YOU SURE YOU WISH TO PROCEED?  ")
         passwordEntered = askstring("Encryptor - Verification", "Enter password")
         if passwordEntered  == password and confirm:
-            if not txt_Excluded_files.get('0.0', END)  == '':
-                ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
-            else:
-                ExcludedFiles = []
             dirToEncrypt = var_disc.get() + ':/'
             print(dirToEncrypt)
             for root, dirs, files in os.walk('.'):
                 for filename in files:
                     filepath = os.path.join(root, filename)
                     print(filename)
-                    if filepath not in ExcludedFiles:
-                        with open(filepath, "rb") as file:
-                            original = file.read()
-                        
-                        with open(filepath, "wb") as file:
-                            encrypted = fernet.encrypt(original)
-                            file.write(encrypted)
-                        
-                        fileslist.append(dirToEncrypt + filename)
-                        time.sleep(0.01)
+                
+                    with open(filepath, "rb") as file:
+                        original = file.read()
+                    
+                    with open(filepath, "wb") as file:
+                        encrypted = fernet.encrypt(original)
+                        file.write(encrypted)
+                    
+                    fileslist.append(dirToEncrypt + filename)
+                    time.sleep(0.01)
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:\n%s" % ('\n'.join(fileslist)))
             if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
@@ -125,9 +115,8 @@ def encrypt():
     except PermissionError: showerror("Encryptor", "Permission Error");                                    return None
     except Exception as e: showerror("Encryptor - Fatal Error", e);                                        return None
 
-btn_encrypt = Button(text='Encrypt files', command=encrypt)
-btn_browseKey = Button(text='Browse...', command=browseKeyFile)
-btn_addExcludedFile = Button(frm_excluded_management, text='Add file', command=BTNAddExcludedFile)
+btn_encrypt = ttk.Button(text='Encrypt files', command=encrypt)
+btn_browseKey = ttk.Button(text='Browse...', command=browseKeyFile)
 
 # Grid
 lab_folderPath.grid(row=0, column=0, padx=5, pady=5)
