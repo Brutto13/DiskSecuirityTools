@@ -3,10 +3,12 @@ import os
 import sys
 import datetime
 
-from tkinter import *
+from tkinter import Tk, StringVar, END
+import tkinter.ttk as ttk
 from tkinter.filedialog import *
 from tkinter.messagebox import *
 from tkinter.simpledialog import *
+
 from secuirityEncodings import *
 from cryptography.fernet import Fernet
 
@@ -25,28 +27,26 @@ window.resizable(False, False)
 window.rowconfigure(0, minsize=0, weight=1)
 window.columnconfigure(0, minsize=0, weight=1)
 
-# setting up frames
-frm_excluded_management = Frame()
 
+progress = ttk.Progressbar(window, mode='indeterminate', orient='horizontal')
 # setting up labels
-lab_folderPath = Label(text='Folder path')
-lab_keyFile = Label(text='Key file')
-lab_exclude = Label(frm_excluded_management, text='Excluded files')
+lab_folderPath = ttk.Label(text='Folder path')
+lab_keyFile = ttk.Label(text='Key file')
+# lab_exclude = Label(frm_excluded_management, text='Excluded files')
 
 # setting up entrys
 WIDTH = 76
-ent_folderpath = Entry(width=WIDTH)
-ent_keyFile = Entry(width=WIDTH)
+ent_folderpath = ttk.Entry(width=WIDTH)
+ent_keyFile = ttk.Entry(width=WIDTH)
 
-# setting up Text's widgets
-HEIGHT = 10
-WIDTH = 58
-txt_Excluded_files = Text(width=WIDTH, height=HEIGHT)
+disc_list = [" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+var_disc = StringVar(window)
+opt_disc = ttk.OptionMenu(window, var_disc, *disc_list)
 
-def browseFolder():
-    filepath = askdirectory()
-    ent_folderpath.delete(0, END)
-    ent_folderpath.insert(0, filepath)
+# def browseFolder():
+#     filepath = askdirectory()
+#     ent_folderpath.delete(0, END)
+#     ent_folderpath.insert(0, filepath)
 
 def browseKeyFile():
     filepath = askopenfilename(
@@ -56,12 +56,9 @@ def browseKeyFile():
     ent_keyFile.delete(0, END)
     ent_keyFile.insert(0, filepath)
 
-def BTNAddExcludedFile():
-    filepath = askopenfilename()
-    txt_Excluded_files.insert(END, filepath + '\n')
-
 def encrypt():
-    os.chdir(ent_folderpath.get())
+    
+    os.chdir(var_disc.get() + ':/')
     # TODO read the key file
     with open(ent_keyFile.get(), "r") as file:
         content = json.loads(file.read())
@@ -73,19 +70,13 @@ def encrypt():
     confirm = askokcancel("Decryptor - confirmation", "Warning: You are decrypting files, if you chosen wrong key, you will loose them without way back!\nAre you sure you want to continue?")
     if confirm:
         # create list of excluded files XXX
-
-        if not txt_Excluded_files.get('0.0', END)  == '':
-            ExcludedFiles = txt_Excluded_files.get('0.0', END).split(sep='\n')
-        else:
-            ExcludedFiles = []
         # print(os.listdir(ent_folderpath.get()))
-        dirToEncrypt = ent_folderpath.get()
+        dirToEncrypt = var_disc.get() + ':/'
         print(dirToEncrypt)
         for root, dirs, files in os.walk('.'):
             for filename in files:
                 filepath = os.path.join(root, filename)
                 print(filename)
-                # if filepath not in ExcludedFiles:
                 with open(filepath, "rb") as file:
                     original = file.read()
                 
@@ -94,6 +85,7 @@ def encrypt():
                     file.write(decrypted)
                 
                 fileslist.append(filename)
+                progress.step()
                 
         
         showinfo("Decryptor - Done", "Succesfully Decrypted Files:\n%s" % ('\n'.join(fileslist)))
@@ -111,22 +103,19 @@ def encrypt():
     
     else:
         showerror("Decryptor - CANCELED", "Decrypting stpped by the user!")
-    # except FileNotFoundError:
-    #     showerror("Encryptor - Error", "No such file or directory (ERR2)")
-    # except Exception as e:
-    #     showerror("Encryptor - fatal error", f"Fatal exception occured:\n{e}")
+    
 
-btn_encrypt = Button(text='Decrypt files', command=encrypt)
-btn_browseKey = Button(text='Browse...', command=browseKeyFile)
-btn_browseFolder = Button(text='Browse...', command=browseFolder)
-btn_addExcludedFile = Button(frm_excluded_management, text='Add file', command=BTNAddExcludedFile)
+btn_encrypt = ttk.Button(text='Decrypt files', command=encrypt)
+btn_browseKey = ttk.Button(text='Browse...', command=browseKeyFile)
+# btn_browseFolder = ttk.Button(text='Browse...', command=browseFolder)
+# btn_addExcludedFile = ttk.Button( text='Add file', command=BTNAddExcludedFile)
 
 # Grid
 lab_folderPath.grid(row=0, column=0, padx=5, pady=5)
 lab_keyFile.grid(row=1, column=0, padx=5, pady=5)
 
 
-ent_folderpath.grid(row=0, column=1, padx=5, pady=5)
+opt_disc.grid(row=0, column=1, padx=5, pady=5, sticky='w')
 ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
 # txt_Excluded_files.grid(row=2, column=1, padx=5, pady=5)
 
@@ -135,8 +124,8 @@ ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
 # btn_addExcludedFile.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
 
 
-btn_browseFolder.grid(row=0, column=2, padx=5, pady=5)
+# btn_browseFolder.grid(row=0, column=2, padx=5, pady=5)
 btn_browseKey.grid(row=1, column=2, padx=5, pady=5)
 btn_encrypt.grid(row=3, column=1, padx=5, pady=5, sticky='ew')
-
+progress.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
 window.mainloop()

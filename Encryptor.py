@@ -29,6 +29,8 @@ window.resizable(False, False)
 window.rowconfigure(0, minsize=0, weight=1)
 window.columnconfigure(0, minsize=0, weight=1)
 
+# progress = ttk.Progressbar(window, mode='indeterminate', orient='horizontal')
+
 # setting up labels
 lab_folderPath = ttk.Label(text='Encrypted Disc')
 lab_keyFile = ttk.Label(text='Key file')
@@ -40,7 +42,7 @@ ent_folderpath = ttk.Entry(width=WIDTH)
 ent_keyFile = ttk.Entry(width=WIDTH)
 
 
-disc_list = [" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+disc_list = [" ", "A", "B", "D", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "S", "T", "U", "V", "W", "X", "Y", "Z"] # Removed discs C: and R: and E:
 var_disc = StringVar(window)
 opt_disc = ttk.OptionMenu(window, var_disc, *disc_list)
 
@@ -90,7 +92,8 @@ def encrypt():
                         file.write(encrypted)
                     
                     fileslist.append(dirToEncrypt + filename)
-                    time.sleep(0.01)
+                    window.mainloop()
+                    # progress.step()
             
             showinfo("Encryptor - Done", "Succesfully Encrypted Files:\n%s" % ('\n'.join(fileslist)))
             if askyesno("Encryptor", "Do you want to save JSON-formatted settings?"):
@@ -124,5 +127,6 @@ ent_keyFile.grid(row=1, column=1, padx=5, pady=5)
 
 btn_browseKey.grid(row=1, column=2, padx=5, pady=5)
 btn_encrypt.grid(row=3, column=1, padx=5, pady=5, sticky='ew')
+# progress.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
 
 window.mainloop()
