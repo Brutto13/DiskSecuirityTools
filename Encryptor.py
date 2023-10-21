@@ -40,29 +40,29 @@ lab_keyFile = ttk.Label(text='Key file')
 WIDTH = 76
 ent_folderpath = ttk.Entry(width=WIDTH)
 ent_keyFile = ttk.Entry(width=WIDTH)
+ent_backupFolder = ttk.Entry(width=WIDTH)
 
-
-disc_list = [" ", "A", "B", "D", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "S", "T", "U", "V", "W", "X", "Y", "Z"] # Removed discs C: and R: and E:
+disc_list = [" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"] # XXX ONLY FOR TESTING Removed discs C: and R: and E:
 var_disc = StringVar(window)
 opt_disc = ttk.OptionMenu(window, var_disc, *disc_list)
 
+
+
 def browseKeyFile():
     filepath = askopenfilename(
-        filetypes=[( 'Private key file', '*.prv')]
+        filetypes=[('Private key file', '*.prv')]
     )
 
     ent_keyFile.delete(0, END)
     ent_keyFile.insert(0, filepath)
 
-def BTNAddExcludedFile():
-    filepath = askopenfilename()
-    # txt_Excluded_files.insert(END, filepath + '\n')
 
 def encrypt():
     try:
         os.chdir(var_disc.get() + ':/')
+        backup = ent_backupFolder.get()
         if var_disc.get() == 'C':
-            if not askokcancel("Encryptor - Critical Warning", "WARNING! You are encrypting disc \"C\"\nThat means that if you won\'t decrypt it before\nshutting down computer\nYou won\'t run OS again!!!\nAre you sure you want to continue???"):
+            if not askokcancel("Encryptor - Critical Warning", "WARNING! You are encrypting disc \"C\"\nThat means that if you won\'t decrypt it before\nshutting down computer\nYou won\'t run OS again!!!\nAre you sure you want to continue???", icon='warning'):
                 showerror("Encrypptor - Interrupted", "Operation Interrupted by the user!")
                 return None
 
@@ -74,7 +74,7 @@ def encrypt():
         fernet = Fernet(key)
         fileslist = []
         # Ask for password
-        confirm = askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose it\nARE YOU SURE YOU WISH TO PROCEED?  ")
+        confirm = askokcancel("Encryptor - confirmation", "WARNING: When you encrypt the folder\nthe only way to get them back is to use the key file\nDo not loose/encrypt it\nARE YOU SURE YOU WISH TO PROCEED?  ")
         passwordEntered = askstring("Encryptor - Verification", "Enter password")
         if passwordEntered  == password and confirm:
             dirToEncrypt = var_disc.get() + ':/'
@@ -91,6 +91,9 @@ def encrypt():
                         encrypted = fernet.encrypt(original)
                         file.write(encrypted)
                     
+                    with open(backup + filename, "wb") as file:
+                        file.write(original)
+
                     fileslist.append(dirToEncrypt + filename)
                     # window.mainloop()
                     # progress.step()
